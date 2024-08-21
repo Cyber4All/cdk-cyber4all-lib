@@ -22,7 +22,7 @@ export class VpcProductStack extends cdk.aws_servicecatalog.ProductStack {
             description: "True or False"
         });
 
-        // const availabilityZones = new cdk.CfnParameter(this, 'name', {
+        // const availabilityZones = new cdk.CfnParameter(this, 'Availablity Zones', {
         //     type: "CommaDelimitedList",
         //     description: "The availability zones"
         // });
