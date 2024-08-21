@@ -1,6 +1,7 @@
 import { Construct } from "constructs";
 import * as cdk from "aws-cdk-lib";
 import { SubnetConfiguration } from "aws-cdk-lib/aws-ec2";
+import * as aws_ram from "aws-cdk-lib/aws-ram";
 
 export interface VpcProps {
     enablePublicSubnets: boolean;
@@ -30,12 +31,22 @@ export class VPC extends Construct {
             });
         }
 
-
         const vpc = new cdk.aws_ec2.Vpc(this, "VPC", {
             vpcName: props.name,
             availabilityZones: props.availabilityZones,
             subnetConfiguration: subnets,
             natGateways: props.natGateways,
+        });
+
+        const resourceArns = vpc.publicSubnets.map(subnet => subnet.subnetId);
+
+        new aws_ram.CfnResourceShare(this, 'VPC-ResourceShare', {
+            allowExternalPrincipals: false,
+            name: props.name + '-ResourceShare',
+            permissionArns: ['permissionArns'],
+            principals: ['principals'],
+            resourceArns: resourceArns,
+            sources: ['sources'],
         });
     }
 }
