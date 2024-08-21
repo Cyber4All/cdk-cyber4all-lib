@@ -10,11 +10,12 @@ export interface VpcProps {
     natGateways: 1;
 }
 
-export class VPC extends Construct {
+export class Vpc extends Construct {
     constructor(scope: Construct, id: string, props: VpcProps) {
         super(scope, id);
-
+        
         const subnets: SubnetConfiguration[] = []
+
         if (props.enablePublicSubnets) {
             subnets.push({
                 subnetType: cdk.aws_ec2.SubnetType.PUBLIC,
@@ -22,6 +23,7 @@ export class VPC extends Construct {
                 cidrMask: 24,
             });
         }
+
         if (props.enablePrivateSubnets) {
             subnets.push({
                 subnetType: cdk.aws_ec2.SubnetType.PRIVATE_WITH_EGRESS,
@@ -30,12 +32,11 @@ export class VPC extends Construct {
             });
         }
 
-
-        const vpc = new cdk.aws_ec2.Vpc(this, "VPC", {
+        new cdk.aws_ec2.Vpc(this, "VPC", {
             vpcName: props.name,
             availabilityZones: props.availabilityZones,
             subnetConfiguration: subnets,
-            natGateways: props.natGateways,
+            // natGateways: props.natGateways,
         });
     }
 }

@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { version } from '../package.json';
+import { VpcProductStack } from './products/vpc-product-stack';
 
 export interface PortfolioProps {
     /**
@@ -38,31 +39,43 @@ export interface ProductProps {
     description: string;
 
     /**
-     * The name of the portfolio to which the product should be added.
-     */
-    portfolioName: string;
-
-    /**
      * The ProductStack class to be used for the product.
      */
-    productStack: new (scope: Construct, id: string) => cdk.aws_servicecatalog.ProductStack;
+    productStack: cdk.aws_servicecatalog.ProductStack;
 }
 
 export interface ServicecatalogStackProps extends cdk.StackProps {
     readonly portfolios: PortfolioProps[];
     
-    readonly products: ProductProps[];
-
     readonly tagOptions?: TagOption[];
 }
 
 export class ServicecatalogStack extends cdk.Stack {
     private portfolioDictionary: { [name: string]: cdk.aws_servicecatalog.Portfolio } = {};
 
-    constructor(scope: Construct, id: string, props: ServicecatalogStackProps) {
+    constructor(scope: Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
 
-        const { portfolios, products, tagOptions } = props;
+        const portfolios = [
+            {
+                portfolioName: "Network Infrastucture",
+                description: "This portfolio contains all network infrastructure products.",
+                accountIds: ["123456789012"], // TODO: Replace with your account ID
+                products: [
+                    {
+                        productName: "VPC",
+                        description: "This product creates a VPC.",
+                        productStack: new VpcProductStack(this, 'VpcProductStack')
+                    }
+                ]
+            }
+        ];
+        const tagOptions: TagOption[] = [
+            {
+                key: "Environment",
+                values: ["Dev", "Prod"]
+            }
+        ];
         
         // Create the portfolios
         for (let i = 0; i < portfolios.length; i++) {
@@ -75,13 +88,10 @@ export class ServicecatalogStack extends cdk.Stack {
                 throw new Error(`${portfolioObj.portfolioName} portfolio is already exists in config`);
             }
             
-            // Add the portfolio to the dictionary
-            this.portfolioDictionary[portfolioObj.portfolioName] = portfolio;
-        }
-
-        // Create the products
-        for (let i = 0; i < products.length; i++) {
-            this.createProduct("product_" + i, products[i]);
+            // Create the products in the portfolio
+            for (let i = 0; i < portfolioObj.products.length; i++) {
+                this.createProduct("product_" + i, portfolioObj.products[i], portfolio);
+            }
         }
     }
 
@@ -119,7 +129,7 @@ export class ServicecatalogStack extends cdk.Stack {
         });
 
         return new cdk.aws_servicecatalog.TagOptions(this, id + '_tagOption', {
-          allowedValuesForTags
+            allowedValuesForTags
         });
     }
 
@@ -129,11 +139,10 @@ export class ServicecatalogStack extends cdk.Stack {
    * @param product 
    * @returns 
    */
-  createProduct(id: string, productProps: ProductProps) {
-    const { productName, description, productStack, portfolioName } = productProps;
+  createProduct(id: string, productProps: ProductProps, portfolio: cdk.aws_servicecatalog.Portfolio): cdk.aws_servicecatalog.CloudFormationProduct {
+    const { productName, description, productStack } = productProps;
 
-    // Instantiates the product stack class
-    const productClass = new productStack(this, id);
+    const template = cdk.aws_servicecatalog.CloudFormationTemplate.fromProductStack(productStack);
 
     const product = new cdk.aws_servicecatalog.CloudFormationProduct(this, id, {
         productName,
@@ -142,16 +151,11 @@ export class ServicecatalogStack extends cdk.Stack {
         productVersions: [
             {
                 productVersionName: version,
-                cloudFormationTemplate: cdk.aws_servicecatalog.CloudFormationTemplate.fromProductStack(productClass),
+                cloudFormationTemplate: template,
             },
         ]
     });
 
-    // Add the product to the portfolio
-    const portfolio = this.portfolioDictionary[portfolioName];
-    if (!portfolio) {
-      throw new Error(`${portfolioName} protfolio is not exists in config. Make sure config with name is exists`);
-    }
     portfolio.addProduct(product);
 
     return product;
