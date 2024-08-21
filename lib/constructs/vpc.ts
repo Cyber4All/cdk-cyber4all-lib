@@ -38,15 +38,13 @@ export class VPC extends Construct {
             natGateways: props.natGateways,
         });
 
-        const resourceArns = vpc.publicSubnets.map(subnet => subnet.subnetId);
-
-        new aws_ram.CfnResourceShare(this, 'VPC-ResourceShare', {
-            allowExternalPrincipals: false,
-            name: props.name + '-ResourceShare',
-            permissionArns: ['permissionArns'],
-            principals: ['principals'],
-            resourceArns: resourceArns,
-            sources: ['sources'],
-        });
+        // const resourceArns = vpc.publicSubnets.map(subnet => subnet.subnetId);
+        // new aws_ram.CfnResourceShare(this, 'VPC-ResourceShare', {
+        //     allowExternalPrincipals: false,
+        //     name: props.name + '-ResourceShare',
+        //     permissionArns: [],
+        //     principals: [],
+        //     resourceArns: resourceArns,
+        // });
     }
 }
