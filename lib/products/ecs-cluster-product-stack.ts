@@ -2,7 +2,7 @@ import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
 import { ECSClusterConstruct } from "../constructs/ecs-cluster";
 
-export class ECSClusterProductStack extends cdk.aws_servicecatalog.ProductStack {
+export class EcsClusterProductStack extends cdk.aws_servicecatalog.ProductStack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
