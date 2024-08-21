@@ -45,7 +45,7 @@ export interface ProductProps {
     /**
      * The ProductStack class to be used for the product.
      */
-    productStack: cdk.aws_servicecatalog.ProductStack;
+    productStack: new (scope: Construct, id: string) => cdk.aws_servicecatalog.ProductStack;
 }
 
 export interface ServicecatalogStackProps extends cdk.StackProps {
@@ -132,16 +132,19 @@ export class ServicecatalogStack extends cdk.Stack {
   createProduct(id: string, productProps: ProductProps) {
     const { productName, description, productStack, portfolioName } = productProps;
 
+    // Instantiates the product stack class
+    const productClass = new productStack(this, id);
+
     const product = new cdk.aws_servicecatalog.CloudFormationProduct(this, id, {
-      productName,
+        productName,
         description,
-      owner: "Secured Inc.",
-      productVersions: [
-        {
-          productVersionName: version,
-          cloudFormationTemplate: cdk.aws_servicecatalog.CloudFormationTemplate.fromProductStack(productStack),
-        },
-      ]
+        owner: "Secured Inc.",
+        productVersions: [
+            {
+                productVersionName: version,
+                cloudFormationTemplate: cdk.aws_servicecatalog.CloudFormationTemplate.fromProductStack(productClass),
+            },
+        ]
     });
 
     // Add the product to the portfolio

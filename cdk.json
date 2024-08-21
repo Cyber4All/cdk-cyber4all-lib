@@ -1,9 +1,5 @@
 {
-<<<<<<< HEAD
-  "app": "npx ts-node --prefer-ts-exts bin/vpc.ts",
-=======
   "app": "npx ts-node --prefer-ts-exts bin/servicecatalog-app.ts",
->>>>>>> 92b13c46eda766c9c4b8d006c5a3d9e15f0fa75d
   "watch": {
     "include": [
       "**"
