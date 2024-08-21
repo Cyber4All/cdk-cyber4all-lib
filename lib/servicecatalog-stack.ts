@@ -68,10 +68,16 @@ export class ServicecatalogStack extends cdk.Stack {
                         description: "This product creates a VPC.",
                         productStack: new VpcProductStack(this, 'VpcProductStack')
                     },
+                ]
+            },
+            {
+                portfolioName: "Application Infrastructure",
+                description: "This portfolio contains products for rolling out applications.",
+                products: [
                     {
                         productName: "ECS Cluster",
-                        description: "This product creates an ECS Cluster.",
-                        productStack: new EcsClusterProductStack(this, 'EcsClusterStack')
+                        description: "This product creates a cluster that applications can run on top of.",
+                        productStack: new EcsClusterProductStack(this, 'EcsProductStack')
                     }
                 ]
             }
