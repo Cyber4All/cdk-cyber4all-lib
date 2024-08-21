@@ -1,7 +1,7 @@
 import { Construct } from "constructs";
 import * as cdk from "aws-cdk-lib";
 import { SubnetConfiguration } from "aws-cdk-lib/aws-ec2";
-import * as aws_ram from "aws-cdk-lib/aws-ram";
+// import * as aws_ram from "aws-cdk-lib/aws-ram";
 
 export interface VpcProps {
     enablePublicSubnets: boolean;
@@ -11,11 +11,12 @@ export interface VpcProps {
     natGateways: 1;
 }
 
-export class VPC extends Construct {
+export class Vpc extends Construct {
     constructor(scope: Construct, id: string, props: VpcProps) {
         super(scope, id);
-
+        
         const subnets: SubnetConfiguration[] = []
+
         if (props.enablePublicSubnets) {
             subnets.push({
                 subnetType: cdk.aws_ec2.SubnetType.PUBLIC,
@@ -23,6 +24,7 @@ export class VPC extends Construct {
                 cidrMask: 24,
             });
         }
+
         if (props.enablePrivateSubnets) {
             subnets.push({
                 subnetType: cdk.aws_ec2.SubnetType.PRIVATE_WITH_EGRESS,
@@ -31,7 +33,7 @@ export class VPC extends Construct {
             });
         }
 
-        const vpc = new cdk.aws_ec2.Vpc(this, "VPC", {
+        new cdk.aws_ec2.Vpc(this, "VPC", {
             vpcName: props.name,
             availabilityZones: props.availabilityZones,
             subnetConfiguration: subnets,
