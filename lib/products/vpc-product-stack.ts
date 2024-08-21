@@ -1,33 +1,38 @@
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs"
-
-export interface VPCProductStackProps extends cdk.StackProps {
-    readonly acceleratorPrefix: string;
-}
+import { VPC } from "../constructs/vpc";
 
 export class VPCProductStack extends cdk.aws_servicecatalog.ProductStack {
-    constructor(scope: Construct, id: string, props?: VPCProductStackProps) {
+    constructor(scope: Construct, id: string) {
         super(scope, id);
 
-        const name = new cdk.CfnParameter(this, 'name', {
+        const name = new cdk.CfnParameter(this, 'Name', {
             type: "String",
             description: "The name of the VPC."
         });
 
-        const publicSubnets = new cdk.CfnParameter(this, 'PublicSubnet', {
+        const publicSubnets = new cdk.CfnParameter(this, 'Enable Public Subnets', {
             type: "boolean",
-            description: "The name of the public subnet"
+            description: "True or False"
 
         });
 
-        const privateSubnets = new cdk.CfnParameter(this, 'PrivateSubnets', {
+        const privateSubnets = new cdk.CfnParameter(this, 'Enable Private Subnets', {
             type: "boolean",
-            description: "The name of the private subnet"
+            description: "True or False"
         });
 
         const availabilityZones = new cdk.CfnParameter(this, 'name', {
-            type: "String",
-            description: "The name of the availabilty zone"
+            type: "CommaDelimitedList",
+            description: "The availability zones"
+        });
+
+        new VPC(scope, name.valueAsString, {
+            enablePublicSubnets: Boolean(publicSubnets.valueAsString),
+            enablePrivateSubnets: Boolean(privateSubnets.valueAsString),
+            name: name.valueAsString,
+            availabilityZones: availabilityZones.valueAsList,
+            natGateways: 1,
         });
 
 
