@@ -38,6 +38,7 @@ export class Vpc extends Construct {
             availabilityZones: props.availabilityZones,
             subnetConfiguration: subnets,
             natGateways: props.natGateways,
+            restrictDefaultSecurityGroup: false,
         });
 
         // const resourceArns = vpc.publicSubnets.map(subnet => subnet.subnetId);

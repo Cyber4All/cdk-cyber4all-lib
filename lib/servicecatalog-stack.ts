@@ -60,11 +60,11 @@ export class ServicecatalogStack extends cdk.Stack {
             {
                 portfolioName: "Network Infrastucture",
                 description: "This portfolio contains all network infrastructure products.",
-                accountIds: ["123456789012"], // TODO: Replace with your account ID
+                accountIds: ["353964526231"], // TODO: Replace with your account ID
                 products: [
                     {
-                        productName: "VPC",
-                        description: "This product creates a VPC.",
+                        productName: "VPC Network",
+                        description: "This product will create all the resources needed for an application VPC.",
                         productStack: new VpcProductStack(this, 'VpcProductStack')
                     }
                 ]
@@ -108,9 +108,15 @@ export class ServicecatalogStack extends cdk.Stack {
         // Share the portfolio with the specified account IDs
         if (accountIds) {
             accountIds.forEach(accountId => {
-                portfolio.shareWithAccount(accountId);
+                portfolio.shareWithAccount(accountId, {
+                    shareTagOptions: true,
+                });
             });
         }
+
+        let roleIns = cdk.aws_iam.Role.fromRoleArn(this, id + "_role_1", "arn:aws:iam::590184083085:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_AWSServiceCatalogEndUserAccess_c04b3af4e72d0a1c");
+        portfolio.giveAccessToRole(roleIns)
+
 
         // Create & Associate TagOptions for the portfolio
         if (tagOptions) {
