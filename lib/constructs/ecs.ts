@@ -3,26 +3,7 @@ import { ExecuteCommandLogging } from "aws-cdk-lib/aws-ecs";
 import { Construct } from "constructs";
 
 export type ECSProps = {
-  /** The ID of the VPC */
-  vpcId: string;
-  /** The subnets to use */
-  vpcSubnetIds: string[];
-
-  /** Autoscaling configuration */
-  scaling?: {
-    /** Min machines to spin up. Default: 1 */
-    min: number;
-    /** Max machines to spin up. Default: 3 */
-    max: number;
-  };
-
-  /** The kind of machine to use */
-  machine?: {
-    /** Machine AMI image */
-    image: string;
-    /** Instance type */
-    instanceType: string;
-  };
+  logRetention: number;
 };
 
 export class ECSConstruct extends Construct {
@@ -34,7 +15,7 @@ export class ECSConstruct extends Construct {
       this,
       `CloudWatchLogGroup`,
       {
-        retention: 90,
+        retention: props?.logRetention,
       }
     );
 
@@ -44,17 +25,18 @@ export class ECSConstruct extends Construct {
       { name: id }
     );
 
-    const cluster = new cdk.aws_ecs.Cluster(this, `Cluster`, {
+    new cdk.aws_ecs.Cluster(this, `Cluster`, {
       executeCommandConfiguration: {
         logging: ExecuteCommandLogging.OVERRIDE,
         logConfiguration: {
           cloudWatchLogGroup: cloudWatchLogGroup,
         },
       },
+      enableFargateCapacityProviders: true,
       containerInsights: true,
       defaultCloudMapNamespace: discoveryNamespace,
-      // TODO: Use John's VPC.
-      vpc: new cdk.aws_ec2.Vpc(this, `VPC`, {})
+      // TODO: Do we need a VPC?
+      // vpc: cdk.aws_,
     });
   }
 }
