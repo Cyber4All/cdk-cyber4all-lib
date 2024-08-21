@@ -12,5 +12,4 @@ new ServicecatalogStack(app, 'ServicecatalogStack', {
         }
     ],
     products: [],
-
 });
