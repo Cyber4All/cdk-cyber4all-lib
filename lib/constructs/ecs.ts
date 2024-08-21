@@ -12,7 +12,7 @@ export class ECSConstruct extends Construct {
     // Defining a new log group for cluster use.
     const cloudWatchLogGroup = new cdk.aws_logs.LogGroup(
       this,
-      `${id}CloudWatchLogGroup`,
+      `CloudWatchLogGroup`,
       {
         retention: 90,
       }
@@ -20,11 +20,11 @@ export class ECSConstruct extends Construct {
 
     const discoveryNamespace = new cdk.aws_servicediscovery.CfnHttpNamespace(
       this,
-      id,
+      `DiscoveryNamespace`,
       { name: id }
     );
 
-    const cluster = new cdk.aws_ecs.CfnCluster(this, `${id}Cluster`, {
+    const cluster = new cdk.aws_ecs.CfnCluster(this, `Cluster`, {
       configuration: {
         executeCommandConfiguration: {
           logging: "OVERRIDE",
@@ -46,17 +46,17 @@ export class ECSConstruct extends Construct {
 
     const launchTemplate = new cdk.aws_ec2.LaunchTemplate(
       this,
-      `${id}LaunchTemplate`
+      `LaunchTemplate`
     );
 
     const autoScalingGroup = new cdk.aws_autoscaling.AutoScalingGroup(
       this,
-      `${id}AutoScalingGroup`,
+      `AutoScalingGroup`,
       {
         minCapacity: props?.autoscaling?.minCapacity ?? 1,
         maxCapacity: props?.autoscaling?.maxCapacity ?? 3,
         // TODO: Replace this with John's VPC
-        vpc: new cdk.aws_ec2.Vpc(this, `${id}Vpc`, {}),
+        vpc: new cdk.aws_ec2.Vpc(this, `Vpc`, {}),
         // TODO: Change?
         machineImage: cdk.aws_ec2.MachineImage.genericLinux({
           "us-east-1": "ami-011425496927b80c0",
@@ -67,7 +67,7 @@ export class ECSConstruct extends Construct {
 
     const capacityProvider = new cdk.aws_ecs.AsgCapacityProvider(
       this,
-      `${id}CapacityProvider`,
+      `CapacityProvider`,
       { autoScalingGroup }
     );
   }
