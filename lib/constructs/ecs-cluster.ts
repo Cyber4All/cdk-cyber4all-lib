@@ -2,12 +2,12 @@ import * as cdk from "aws-cdk-lib";
 import { ExecuteCommandLogging } from "aws-cdk-lib/aws-ecs";
 import { Construct } from "constructs";
 
-export type ECSProps = {
+export type ECSClusterProps = {
   logRetention: number;
 };
 
-export class ECSConstruct extends Construct {
-  constructor(scope: Construct, id: string, props?: Partial<ECSProps>) {
+export class ECSClusterConstruct extends Construct {
+  constructor(scope: Construct, id: string, props?: Partial<ECSClusterProps>) {
     super(scope, id);
 
     // Defining a new log group for cluster use.
