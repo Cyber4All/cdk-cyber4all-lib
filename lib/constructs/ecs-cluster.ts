@@ -7,7 +7,7 @@ export type ECSClusterProps = {
 };
 
 export class ECSClusterConstruct extends Construct {
-  constructor(scope: Construct, id: string, props?: Partial<ECSClusterProps>) {
+  constructor(scope: Construct, id: string, props: ECSClusterProps) {
     super(scope, id);
 
     // Defining a new log group for cluster use.
@@ -35,8 +35,6 @@ export class ECSClusterConstruct extends Construct {
       enableFargateCapacityProviders: true,
       containerInsights: true,
       defaultCloudMapNamespace: discoveryNamespace,
-      // TODO: Do we need a VPC?
-      // vpc: cdk.aws_,
     });
   }
 }
