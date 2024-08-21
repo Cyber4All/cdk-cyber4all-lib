@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { version } from '../package.json';
 import { VpcProductStack } from './products/vpc-product-stack';
+import { EcsClusterProductStack } from './products/ecs-cluster-product-stack';
 
 export interface PortfolioProps {
     /**
@@ -66,6 +67,11 @@ export class ServicecatalogStack extends cdk.Stack {
                         productName: "VPC",
                         description: "This product creates a VPC.",
                         productStack: new VpcProductStack(this, 'VpcProductStack')
+                    },
+                    {
+                        productName: "ECS Cluster",
+                        description: "This product creates an ECS Cluster.",
+                        productStack: new EcsClusterProductStack(this, 'EcsClusterStack')
                     }
                 ]
             }
